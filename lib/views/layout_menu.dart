@@ -1,5 +1,6 @@
 import 'package:admin_fasionxt/views/colors.dart';
 import 'package:admin_fasionxt/views/kategori/list.dart';
+import 'package:admin_fasionxt/views/produk/list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -16,7 +17,7 @@ class _LayoutMenuState extends State<LayoutMenu> {
   int currentIndex = 0;
   List<Widget> screens = [
     DaftarKategori(),
-    Scaffold(),
+    DaftarProduk(),
     Scaffold(),
   ];
 
