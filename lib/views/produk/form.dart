@@ -8,6 +8,7 @@ import 'package:admin_fasionxt/views/layout_menu.dart';
 import 'package:admin_fasionxt/views/utils/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
 
 class ProdukFormPage extends StatefulWidget {
   final Produk? produk;
@@ -28,6 +29,7 @@ class _ProdukFormPageState extends State<ProdukFormPage> {
   String? _selectedKategoriId;
   File? _selectedImage = null;
   final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -45,9 +47,17 @@ class _ProdukFormPageState extends State<ProdukFormPage> {
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+      final File imageFile = File(pickedFile.path);
+      final img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+      if (image != null) {
+        final compressedImage = img.encodeJpg(image, quality: 85);
+        final compressedImageFile = File(
+            '${imageFile.parent.path}/compressed_${imageFile.uri.pathSegments.last}');
+        await compressedImageFile.writeAsBytes(compressedImage);
+        setState(() {
+          _selectedImage = compressedImageFile;
+        });
+      }
     }
   }
 
@@ -56,12 +66,28 @@ class _ProdukFormPageState extends State<ProdukFormPage> {
     return await apiService.list();
   }
 
-  void _submitForm() async {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
       if (widget.produk == null && _selectedImage == null) {
         SnackbarUtils.showErrorSnackbar(
             context, 'Gambar produk harus dipilih.');
         return;
+      }
+
+      if (_selectedImage != null) {
+        final fileSize = await _selectedImage!.length();
+        if (fileSize > 500 * 1024) {
+          final img.Image? image =
+              img.decodeImage(_selectedImage!.readAsBytesSync());
+          if (image != null) {
+            final compressedImage = img.encodeJpg(image, quality: 85);
+            await _selectedImage!.writeAsBytes(compressedImage);
+          }
+        }
       }
 
       var apiProdukService = APIProdukService();
@@ -103,6 +129,10 @@ class _ProdukFormPageState extends State<ProdukFormPage> {
         SnackbarUtils.showErrorSnackbar(context, result['error']);
       }
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -330,11 +360,13 @@ class _ProdukFormPageState extends State<ProdukFormPage> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                onPressed: _submitForm,
-                child: Text(
-                  'Simpan',
-                  style: TextStyle(color: Colors.white),
-                ),
+                onPressed: _isLoading ? null : _submitForm,
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : Text(
+                        'Simpan',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
             ],
           ),

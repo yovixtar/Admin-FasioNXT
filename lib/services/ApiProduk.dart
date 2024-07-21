@@ -47,10 +47,12 @@ class APIProdukService {
     if (response.statusCode == 201) {
       var responseBody = await http.Response.fromStream(response);
       var responseData = jsonDecode(responseBody.body);
+      print(responseData);
       return {'success': responseData['message']};
     } else {
       var responseBody = await http.Response.fromStream(response);
       var responseData = jsonDecode(responseBody.body);
+      print(responseData);
       return {
         'error': responseData['message'] ??
             "Terjadi kendala, mohon tunggu sebentar lagi !"

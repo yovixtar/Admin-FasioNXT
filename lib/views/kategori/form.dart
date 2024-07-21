@@ -40,9 +40,6 @@ class _FormKategoriState extends State<FormKategori> {
       result = await _apiService.update(
           id: widget.kategori!.id, nama: _namaController.text);
     }
-    setState(() {
-      _isLoading = false;
-    });
     if (result['success'] != null) {
       Navigator.pop(context);
       Navigator.of(context).pushReplacement(
@@ -56,6 +53,10 @@ class _FormKategoriState extends State<FormKategori> {
     } else {
       SnackbarUtils.showErrorSnackbar(context, result['error']);
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

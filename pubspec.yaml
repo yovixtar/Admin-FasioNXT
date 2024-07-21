@@ -21,6 +21,7 @@ dependencies:
   intl:
   http: ^0.13.5
   image_picker: ^1.1.2
+  image: ^4.2.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

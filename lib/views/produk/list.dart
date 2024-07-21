@@ -147,10 +147,12 @@ class _DaftarProdukState extends State<DaftarProduk> {
                             isLoading = false;
                           });
                         },
-                  child: Text(
-                    'Hapus',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : Text(
+                          'Hapus',
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
