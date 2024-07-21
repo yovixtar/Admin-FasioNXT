@@ -1,5 +1,6 @@
 import 'package:admin_fasionxt/views/colors.dart';
 import 'package:admin_fasionxt/views/kategori/list.dart';
+import 'package:admin_fasionxt/views/pesanan/list.dart';
 import 'package:admin_fasionxt/views/produk/list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,7 +19,7 @@ class _LayoutMenuState extends State<LayoutMenu> {
   List<Widget> screens = [
     DaftarKategori(),
     DaftarProduk(),
-    Scaffold(),
+    OrderListPage(),
   ];
 
   @override
@@ -47,10 +48,9 @@ class _LayoutMenuState extends State<LayoutMenu> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildNavItem(Icons.home, 0),
-            _buildNavItem(Icons.notifications, 1),
-            _buildNavItem(Icons.shopping_cart, 2),
-            _buildNavItem(Icons.person, 3),
+            _buildNavItem(Icons.category, 0),
+            _buildNavItem(Icons.shopping_basket, 1),
+            _buildNavItem(Icons.receipt, 2),
           ],
         ),
       ),

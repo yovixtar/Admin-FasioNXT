@@ -81,7 +81,9 @@ class _DaftarKategoriState extends State<DaftarKategori> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgBlue,
       appBar: AppBar(
+        backgroundColor: bgBlue,
         title: Text('Daftar Kategori'),
         automaticallyImplyLeading: false,
       ),
@@ -101,30 +103,43 @@ class _DaftarKategoriState extends State<DaftarKategori> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final kategori = snapshot.data![index];
-              return ListTile(
-                title: Text(kategori.nama),
-                subtitle: Text("ID ${kategori.id}"),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                FormKategori(kategori: kategori),
-                          ),
-                        );
-                      },
+              return Card(
+                elevation: 5,
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: ListTile(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  title: Text(
+                    kategori.nama,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: purplePrimary,
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () =>
-                          _showDeleteConfirmationDialog(kategori.id),
-                    ),
-                  ],
+                  ),
+                  subtitle: Text("ID ${kategori.id}"),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  FormKategori(kategori: kategori),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () =>
+                            _showDeleteConfirmationDialog(kategori.id),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

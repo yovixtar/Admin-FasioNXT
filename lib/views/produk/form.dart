@@ -92,7 +92,6 @@ class _ProdukFormPageState extends State<ProdukFormPage> {
 
       if (result['success'] != null) {
         SnackbarUtils.showSuccessSnackbar(context, result['success']);
-        Navigator.of(context).pop();
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => LayoutMenu(
@@ -107,209 +106,239 @@ class _ProdukFormPageState extends State<ProdukFormPage> {
   }
 
   @override
+  void dispose() {
+    _namaController.dispose();
+    _deskripsiController.dispose();
+    _hargaController.dispose();
+    _stokController.dispose();
+    _ukuranController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgLightRed,
       appBar: AppBar(
-        title: Text(widget.produk == null ? 'Tambah Produk' : 'Update Produk'),
+        backgroundColor: bgLightRed,
+        title: Text(widget.produk == null ? 'Tambah Produk' : 'Edit Produk'),
       ),
-      body: FutureBuilder<List<Kategori>>(
-        future: _fetchKategoris(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-                child: Text('Terjadi kesalahan saat memuat data kategori.'));
-          }
-
-          var kategoris = snapshot.data ?? [];
-
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  widget.produk == null || _selectedImage != null
-                      ? _selectedImage != null
-                          ? Stack(
-                              children: [
-                                Image.file(_selectedImage!),
-                                Positioned(
-                                  right: 10,
-                                  bottom: 10,
-                                  child: IconButton(
-                                    style: IconButton.styleFrom(
-                                        backgroundColor: purplePrimary,
-                                        padding: EdgeInsets.all(10)),
-                                    icon: Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () => _showImagePicker(context),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: purplePrimary,
-                              ),
-                              onPressed: () => _showImagePicker(context),
-                              child: Text('Ambil Foto',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  )),
-                            )
-                      : Column(
-                          children: [
-                            Image.network(widget.produk!.gambar),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: purplePrimary,
-                                    ),
-                                    onPressed: () => _showImagePicker(context),
-                                    child: Text('Ambil Foto',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        )),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                  SizedBox(
-                    height: 16,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _namaController,
+                decoration: InputDecoration(
+                  labelText: 'Nama Produk',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  TextFormField(
-                    controller: _namaController,
-                    decoration: InputDecoration(labelText: 'Nama Produk'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nama produk tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Nama Produk harus diisi';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _deskripsiController,
+                decoration: InputDecoration(
+                  labelText: 'Deskripsi Produk',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  TextFormField(
-                    controller: _deskripsiController,
-                    decoration: InputDecoration(labelText: 'Deskripsi Produk'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Deskripsi produk tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Deskripsi Produk harus diisi';
+                  }
+                  return null;
+                },
+                maxLines: 3,
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _hargaController,
+                decoration: InputDecoration(
+                  labelText: 'Harga Produk',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  TextFormField(
-                    controller: _hargaController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: 'Harga Produk'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Harga produk tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Harga Produk harus diisi';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _stokController,
+                decoration: InputDecoration(
+                  labelText: 'Stok Produk',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  TextFormField(
-                    controller: _stokController,
-                    decoration: InputDecoration(labelText: 'Stok Produk'),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Stok produk tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Stok Produk harus diisi';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _ukuranController,
+                decoration: InputDecoration(
+                  labelText: 'Ukuran Produk',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  TextFormField(
-                    controller: _ukuranController,
-                    decoration: InputDecoration(labelText: 'Ukuran Produk'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Ukuran produk tidak boleh kosong';
-                      }
-                      return null;
-                    },
-                  ),
-                  DropdownButtonFormField<String>(
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Ukuran Produk harus diisi';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              FutureBuilder<List<Kategori>>(
+                future: _fetchKategoris(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return Text('Terjadi kesalahan');
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Text('Tidak ada kategori tersedia');
+                  }
+                  return DropdownButtonFormField<String>(
                     value: _selectedKategoriId,
-                    items: kategoris.map((kategori) {
-                      return DropdownMenuItem<String>(
-                        value: kategori.id,
-                        child: Text(kategori.nama),
-                      );
-                    }).toList(),
+                    decoration: InputDecoration(
+                      labelText: 'Kategori',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    items: snapshot.data!
+                        .map(
+                          (kategori) => DropdownMenuItem<String>(
+                            value: kategori.id,
+                            child: Text(kategori.nama),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (value) {
                       setState(() {
                         _selectedKategoriId = value;
                       });
                     },
-                    decoration: InputDecoration(labelText: 'Kategori Produk'),
                     validator: (value) {
                       if (value == null) {
-                        return 'Kategori produk harus dipilih';
+                        return 'Kategori harus dipilih';
                       }
                       return null;
                     },
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
+                  );
+                },
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Gambar Produk',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 10),
+              _selectedImage != null
+                  ? Image.file(
+                      _selectedImage!,
+                      height: 150,
+                      width: 150,
+                    )
+                  : widget.produk != null && widget.produk!.gambar.isNotEmpty
+                      ? Image.network(
+                          widget.produk!.gambar,
+                          height: 150,
+                          width: 150,
+                        )
+                      : Container(
+                          height: 150,
+                          width: 150,
+                          color: Colors.grey[300],
+                          child: Icon(Icons.image, size: 50),
+                        ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: purplePrimary,
-                    ),
-                    onPressed: _submitForm,
-                    child: Text(
-                      widget.produk == null ? 'Tambah Produk' : 'Update Produk',
-                      style: TextStyle(
-                        color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
+                    ),
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: Icon(
+                      Icons.image,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'Dari Galeri',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: purplePrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: Icon(
+                      Icons.camera,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'Dari Kamera',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
               ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _showImagePicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: Icon(Icons.camera_alt),
-            title: Text('Potret Foto'),
-            onTap: () {
-              Navigator.pop(context);
-              _pickImage(ImageSource.camera);
-            },
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: purplePrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                onPressed: _submitForm,
+                child: Text(
+                  'Simpan',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-          ListTile(
-            leading: Icon(Icons.photo_library),
-            title: Text('Ambil dari Galeri'),
-            onTap: () {
-              Navigator.pop(context);
-              _pickImage(ImageSource.gallery);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.close),
-            title: Text('Batal'),
-            onTap: () => Navigator.pop(context),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -22,6 +22,89 @@ class _DaftarProdukState extends State<DaftarProduk> {
     _produkFuture = _apiService.list();
   }
 
+  void _showProductDetail(Produk produk) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  produk.nama,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: purplePrimary,
+                  ),
+                ),
+                SizedBox(height: 10),
+                if (produk.gambar.isNotEmpty)
+                  Image.network(
+                    produk.gambar,
+                    height: 150,
+                    width: 150,
+                  ),
+                SizedBox(height: 10),
+                Text("ID: ${produk.id}"),
+                SizedBox(height: 10),
+                Text(
+                  "Deskripsi: ${produk.deskripsi}",
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Harga: Rp " +
+                      produk.harga.replaceAllMapped(
+                          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+                          (Match m) => '${m[1]}.'),
+                ),
+                SizedBox(height: 10),
+                Text("Stok: ${produk.stok}"),
+                SizedBox(height: 10),
+                Text("Ukuran: ${produk.ukuran}"),
+                SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: purplePrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProdukFormPage(produk: produk),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Edit Produk',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showDeleteConfirmationDialog(String id) {
     showDialog(
       context: context,
@@ -81,7 +164,9 @@ class _DaftarProdukState extends State<DaftarProduk> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgLightRed,
       appBar: AppBar(
+        backgroundColor: bgLightRed,
         title: Text('Daftar Produk'),
         automaticallyImplyLeading: false,
       ),
@@ -101,29 +186,79 @@ class _DaftarProdukState extends State<DaftarProduk> {
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               final produk = snapshot.data![index];
-              return ListTile(
-                title: Text(produk.nama),
-                subtitle: Text("ID ${produk.id}"),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ProdukFormPage(produk: produk),
+              return GestureDetector(
+                onTap: () => _showProductDetail(produk),
+                child: Card(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        produk.gambar.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  produk.gambar,
+                                  height: 60,
+                                  width: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : CircleAvatar(
+                                backgroundColor: purplePrimary,
+                                radius: 30,
+                                child: Text(
+                                  produk.nama[0].toUpperCase(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                produk.nama,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text("ID: ${produk.id}"),
+                              Text(
+                                "Harga: Rp " +
+                                    produk.harga.replaceAllMapped(
+                                        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+                                        (Match m) => '${m[1]}.'),
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           ),
-                        );
-                      },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit, color: purplePrimary),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ProdukFormPage(produk: produk),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () =>
+                              _showDeleteConfirmationDialog(produk.id),
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () => _showDeleteConfirmationDialog(produk.id),
-                    ),
-                  ],
+                  ),
                 ),
               );
             },

@@ -61,7 +61,9 @@ class _FormKategoriState extends State<FormKategori> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgBlue,
       appBar: AppBar(
+        backgroundColor: bgBlue,
         title: Text(
             widget.kategori == null ? 'Tambah Kategori' : 'Update Kategori'),
       ),
@@ -73,7 +75,22 @@ class _FormKategoriState extends State<FormKategori> {
             children: [
               TextFormField(
                 controller: _namaController,
-                decoration: InputDecoration(labelText: 'Nama Kategori'),
+                decoration: InputDecoration(
+                  labelText: 'Nama Kategori',
+                  labelStyle: TextStyle(
+                    color: purplePrimary,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: purplePrimary,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Nama kategori tidak boleh kosong';
@@ -87,13 +104,18 @@ class _FormKategoriState extends State<FormKategori> {
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: purplePrimary,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       onPressed: _submit,
                       child: Text(
                         widget.kategori == null
                             ? 'Tambah Kategori'
                             : 'Update Kategori',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
             ],
